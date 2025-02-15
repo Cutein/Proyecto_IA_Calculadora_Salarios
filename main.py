@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 import pandas as pd
 import nltk
@@ -25,10 +26,14 @@ def get_synonyms(word):
     return {lemma.name().lower() for synset in wordnet.synsets(word) for lemma in synset.lemmas()}
 
 app = FastAPI(title="Calculadora de Proyectos para Desarrolladores", version="1.0.0")
+
+# Servir archivos estáticos (HTML, CSS, JS, imágenes)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.get("/", tags="Home")
 
 def home():
-    return HTMLResponse('<h1>Calculadora de Proyectos para Desarrolladores</h1>')
+    return FileResponse("static/index.html")
 
 @app.get("/salarios", tags="Salarios")
 
@@ -56,4 +61,7 @@ def chatbot(query: str):
     
 @app.get("/experiencia", tags=["Experiencia"])
 def get_salarys_by_experience(experience: int):
-    return [salario for salario in list_results if salario['Años_Experiencia_Laboral'] >= experience]
+    return [
+        salario for salario in list_results
+        if salario['Años_Experiencia_Laboral'].isdigit() and int(salario['Años_Experiencia_Laboral']) <= experience
+    ]

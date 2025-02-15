@@ -1,89 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Proyectos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            text-align: center;
-        }
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 15px;
-            font-size: 1.5rem;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background: #0056b3;
-            padding: 10px;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            margin: 5px;
-            background: #004494;
-            border-radius: 5px;
-        }
-        section {
-            margin: 20px auto;
-            padding: 20px;
-            width: 80%;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px gray;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-        th {
-            background: #007bff;
-            color: white;
-        }
-        input, button {
-            padding: 10px;
-            margin: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-
-<header>Calculadora de Proyectos para Desarrolladores</header>
-
-<nav>
-    <a href="#" onclick="loadSalarios()">Ver Salarios</a>
-    <a href="#" onclick="buscarPorExperiencia()">Buscar por Experiencia</a>
-    <a href="#" onclick="consultarChatbot()">Chatbot</a>
-</nav>
-
-<section id="content">
-    <h2>Bienvenido</h2>
-    <p>Seleccione una opción del menú para comenzar.</p>
-</section>
-
-<script>
-    const apiBase = "http://127.0.0.1:8000";  // Asegúrate de que tu API esté corriendo en esta URL
+const apiBase = "http://127.0.0.1:8000";  // Asegúrate de que tu API esté corriendo en esta URL
 
     function loadSalarios() {
         fetch(`${apiBase}/salarios`)
@@ -92,12 +7,17 @@
                 let html = "<h2>Lista de Salarios</h2>";
                 html += "<table><tr><th>ID</th><th>Profesión</th><th>Edad</th><th>Salario</th><th>Lenguajes</th></tr>";
                 data.forEach(salario => {
+                    let lenguajes = salario.Lenguajes_Maneja.trim(); // Eliminar espacios extra
+                    if (lenguajes.length > 30) { // Limitar a 30 caracteres
+                        lenguajes = lenguajes.substring(0, 27) + "..."; // Agregar puntos suspensivos
+                    }
+
                     html += `<tr>
                                 <td>${salario.id}</td>
                                 <td>${salario.Profesion}</td>
                                 <td>${salario.Edad}</td>
                                 <td>${salario.Salario_Total} ${salario.Moneda}</td>
-                                <td>${salario.Lenguajes_Maneja}</td>
+                                <td>${lenguajes}</td>
                             </tr>`;
                 });
                 html += "</table>";
@@ -145,9 +65,13 @@
                     } else {
                         html += "<table><tr><th>ID</th><th>Lenguajes</th><th>Salario</th></tr>";
                         data.salarios.forEach(salario => {
+                            let lenguajes = salario.Lenguajes_Maneja.trim(); // Eliminar espacios extra
+                            if (lenguajes.length > 30) { // Limitar a 30 caracteres
+                                lenguajes = lenguajes.substring(0, 27) + "..."; // Agregar puntos suspensivos
+                            }
                             html += `<tr>
                                         <td>${salario.id}</td>
-                                        <td>${salario.Lenguajes_Maneja}</td>
+                                        <td>${lenguajes}</td>
                                         <td>${salario.Salario_Total} ${salario.Moneda}</td>
                                     </tr>`;
                         });
@@ -158,7 +82,3 @@
                 .catch(error => console.error("Error en la consulta:", error));
         }
     }
-</script>
-
-</body>
-</html>
